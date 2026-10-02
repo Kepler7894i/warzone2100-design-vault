@@ -1,0 +1,8 @@
+Design Vault mod for the Steam game - make targets (Windows; details in design-vault/README.md)
+
+  make mod                          build mod/out/designvault.wz from your stored designs
+  make mod-install                  build it and install it into your Warzone 2100 profile
+  make mod-uninstall                remove it again (your library and lines are kept)
+  make play-mod                     install, start the Steam game with the mod, rebuild when you quit
+  make remove-design NAME="..."     remove a saved design for good (library, stored file, lines)
+  make test-mod                     the unmodified Steam exe with the mod in a scripted skirmish

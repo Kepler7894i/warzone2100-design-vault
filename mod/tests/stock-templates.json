@@ -1,0 +1,11 @@
+{
+	"templates": [
+		{ "body": "Body5REC", "name": "Twin Machinegun Cobra Hover", "propulsion": "hover01", "type": "WEAPON", "weapons": ["MG2Mk1"] },
+		{ "body": "Body5REC", "name": "Light Cannon Cobra Hover", "propulsion": "hover01", "type": "WEAPON", "weapons": ["Cannon1Mk1"] },
+		{ "body": "Body5REC", "name": "Mini-Rocket Array Cobra Hover", "propulsion": "hover01", "type": "WEAPON", "weapons": ["Rocket-MRL"] },
+		{ "body": "Body5REC", "name": "Sensor Turret Cobra Hover", "propulsion": "hover01", "sensor": "SensorTurret1Mk1", "type": "SENSOR" },
+		{ "body": "Body5REC", "name": "Repair Turret Cobra Hover", "propulsion": "hover01", "repair": "LightRepair1", "type": "REPAIR" },
+		{ "body": "Body1REC", "name": "Machinegun Viper Wheels", "propulsion": "wheeled01", "type": "WEAPON", "weapons": ["MG1Mk1"] }
+	],
+	"version": 1
+}

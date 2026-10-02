@@ -324,3 +324,7 @@ win32/CodeAnalyst
 /.ci/flatpak/net.wz2100.wz2100.yaml
 /.ci/flatpak/Toolchain-cross-arch.cmake
 /.ci/flatpak/meson-cross-file.txt
+
+# Design Vault mod: the root Makefile is ours (upstream ignores generated Makefiles); test output
+!/Makefile
+/run
