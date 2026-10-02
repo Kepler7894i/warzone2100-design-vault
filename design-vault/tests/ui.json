@@ -1,0 +1,7 @@
+{
+	"challenge": { "bases": 2, "difficulty": "Easy", "map": "Sk-Rush", "maxPlayers": 4, "powerLevel": 2, "scavengers": "false", "techLevel": 3, "version": 2 },
+	"player_0": { "team": 0 },
+	"player_1": { "difficulty": "Easy", "ai": "multiplay/skirmish/semperfi.js", "name": "Ally", "team": 0 },
+	"player_2": { "difficulty": "Easy", "ai": "multiplay/skirmish/semperfi.js", "name": "Enemy", "team": 1 },
+	"player_3": { "difficulty": "Easy", "ai": "multiplay/skirmish/semperfi.js", "name": "Enemy", "team": 1 }
+}

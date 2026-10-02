@@ -1,0 +1,30 @@
+Design Vault fork of Warzone 2100 - make targets (Windows, Linux, macOS; details in design-vault/README.md)
+
+Setup and build
+  make setup        install what the build needs, once (Windows: vcpkg packages; Linux: distro packages; macOS: Homebrew tools)
+  make config       configure CMake into build/wz
+  make reconfigure  re-run CMake on the existing build tree (picks up new source files)
+  make build        compile (only what changed)
+  make package      make dist/ a runnable copy (exe, DLLs, game data)
+  make rebuild      reconfigure + build + package
+  make clean        remove compiled objects
+
+Play
+  make play         rebuild if a source file changed, then start the game
+  make run          start the game as it is (ARGS="--window --resolution=1600x900" passes options on)
+
+Test
+  make test         unit tests (+ on Windows: the scripted game scenarios, design screen, stock-game compatibility)
+  make test-unit    line logic only, any platform, needs a C++17 compiler
+  make test-game    scripted skirmish / saved game / campaign scenarios (Windows)
+  make test-ui      design screen buttons + screenshots (Windows)
+  make test-compat  stored designs file of the unmodified game <-> this build (Windows, needs a Steam copy of 4.4.2)
+  make test-real    this build on copies of your real stored designs file (Windows)
+
+Other
+  make icons        regenerate the marker and Upgrade button pictures (needs Python with Pillow and a Steam copy of the game for the original artwork)
+
+Options (make config DATA=full ...)
+  DATA=full    (default) game data built from the submodules, a complete game
+  DATA=none    executable only
+  CONFIGURATION=Release|Debug
