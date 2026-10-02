@@ -74,6 +74,8 @@ struct DROID_TEMPLATE : public BASE_STATS
 	bool            prefab;                     ///< Not player designed, not saved, never delete or change
 	bool            stored;                     ///< Stored template
 	bool            enabled;                    ///< Has been enabled
+	WzString        storedId;                   ///< Identity of a stored template, kept across games. Empty for templates that are not stored.
+	WzString        supersedes;                 ///< storedId of the stored template that this one replaces, once this one can be built. Empty if none.
 };
 
 static inline DROID_TEMPLATE *castDroidTemplate(BASE_STATS *stats)

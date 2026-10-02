@@ -58,6 +58,7 @@
 #include "warzoneconfig.h"
 
 #include "multiplay.h" //ajl
+#include "template.h"
 #include "levels.h"
 #include "visibility.h"
 #include "multimenu.h"
@@ -626,6 +627,8 @@ GAMECODE gameLoop()
 
 	// Shouldn't this be when initialising the game, rather than randomly called between ticks?
 	countUpdate(false); // kick off with correct counts
+
+	designVaultSelfTestTick(); // does nothing, unless it was asked to run (see designvault_selftest.cpp)
 
 	size_t numRegularUpdatesTicks = 0;
 	size_t numFastForwardTicks = 0;

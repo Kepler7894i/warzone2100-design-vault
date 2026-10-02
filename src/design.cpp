@@ -60,6 +60,7 @@
 #include "intimage.h"
 #include "intdisplay.h"
 #include "design.h"
+#include "designvault_icons.h"
 #include "component.h"
 #include "main.h"
 #include "display.h"
@@ -233,7 +234,6 @@ extern std::shared_ptr<W_SCREEN> psWScreen;
 /* default droid design template */
 static DROID_TEMPLATE sDefaultDesignTemplate;
 
-static void desSetupDesignTemplates();
 static void setDesignPauseState();
 static void resetDesignPauseState();
 static bool intAddTemplateButtons(ListTabWidget *templList, DROID_TEMPLATE *psSelected);
@@ -324,6 +324,11 @@ static void setTemplateStat(DROID_TEMPLATE *psTemplate, COMPONENT_STATS *psStats
  * @param isStored If the template is stored or not.
  */
 static void updateStoreButton(bool isStored);
+
+/**
+ * Shows or hides the buttons that are about stored designs, which are only useful when a valid design is selected.
+ */
+static void updateVaultButtons(bool designIsValid);
 
 /* The current name of the design */
 static char			aCurrName[MAX_STR_LENGTH];
@@ -826,7 +831,23 @@ bool intAddDesign(bool bShowCentreScreen)
 	sButInit.pDisplay = intDisplayButtonHilight;
 	sButInit.UserData = PACKDWORD_TRI(0, IMAGE_DES_SAVEH, IMAGE_DES_SAVE);
 
-	if (bMultiPlayer && !widgAddButton(psWScreen, &sButInit))
+	if (!widgAddButton(psWScreen, &sButInit))
+	{
+		return false;
+	}
+
+	// Add the upgrade button: makes a stored copy of the selected design, which replaces it once it can be built
+	sButInit.formID = IDDES_PARTFORM;
+	sButInit.id = IDDES_UPGRADEBUTTON;
+	sButInit.style = WBUT_PLAIN;
+	sButInit.width = designVaultUpgradeButtonWidth();
+	sButInit.height = designVaultUpgradeButtonHeight();
+	sButInit.y = DES_PARTFORMHEIGHT - 3 * sButInit.height - 3 * DES_PARTSEPARATIONY;
+	sButInit.pText = nullptr;
+	sButInit.pTip = _("Upgrade Design: make a stored copy of this design that replaces it as soon as it can be built");
+	sButInit.pDisplay = intDisplayUpgradeButton;
+	sButInit.UserData = 0;
+	if (!widgAddButton(psWScreen, &sButInit))
 	{
 		return false;
 	}
@@ -1011,6 +1032,9 @@ bool intAddDesign(bool bShowCentreScreen)
 	statsForm->hide();
 	widgHide(psWScreen, IDDES_RIGHTBASE);
 
+	// There is no design to store or upgrade yet
+	updateVaultButtons(false);
+
 	return true;
 }
 
@@ -1020,6 +1044,14 @@ void desSetupDesignTemplates()
 	/* init template list */
 	apsTemplateList.clear();
 	apsTemplateList.push_back(&sDefaultDesignTemplate);
+	// Designs that a newer stored design replaces are not offered, unless obsolete designs are being shown.
+	std::unordered_set<std::string> superseded;
+	if (!includeRedundantDesigns)
+	{
+		superseded = findSupersededDesigns([](const DROID_TEMPLATE &templ) {
+			return templ.enabled && researchedTemplate(&templ, selectedPlayer, includeRedundantDesigns);
+		});
+	}
 	for (DROID_TEMPLATE &templ : localTemplates)
 	{
 		/* add template to list if not a transporter,
@@ -1032,7 +1064,8 @@ void desSetupDesignTemplates()
 		    templ.droidType != DROID_CYBORG_CONSTRUCT   &&
 		    templ.droidType != DROID_CYBORG_REPAIR      &&
 		    templ.droidType != DROID_PERSON             &&
-		    researchedTemplate(&templ, selectedPlayer, includeRedundantDesigns))
+		    researchedTemplate(&templ, selectedPlayer, includeRedundantDesigns) &&
+		    !isDesignSuperseded(templ, superseded))
 		{
 			apsTemplateList.push_back(&templ);
 		}
@@ -3023,10 +3056,7 @@ void intProcessDesign(UDWORD id)
 			intSetButtonFlash(IDDES_WPABUTTON,   true);
 			intSetButtonFlash(IDDES_WPBBUTTON,   true);
 
-			if (bMultiPlayer)
-			{
-				widgHide(psWScreen, IDDES_STOREBUTTON);
-			}
+			updateVaultButtons(false);
 		}
 		else
 		{
@@ -3074,11 +3104,7 @@ void intProcessDesign(UDWORD id)
 					intSetButtonFlash(IDDES_WPBBUTTON,   true);
 				}
 
-				if (bMultiPlayer)
-				{
-					widgReveal(psWScreen, IDDES_STOREBUTTON);
-					updateStoreButton(sCurrDesign.stored);
-				}
+				updateVaultButtons(true);
 			}
 		}
 
@@ -3340,6 +3366,8 @@ void intProcessDesign(UDWORD id)
 						{
 							//before deleting the template, need to make sure not being used in production
 							deleteTemplateFromProduction(psTempl, selectedPlayer, ModeQueue);
+							// A deleted design must not come back in the next game.
+							forgetStoredDesign(*i);
 							// Delete the template.
 							localTemplates.erase(i);
 							break;
@@ -3390,11 +3418,33 @@ void intProcessDesign(UDWORD id)
 				break;
 			}
 		case IDDES_STOREBUTTON:
-			sCurrDesign.stored = !sCurrDesign.stored;	// Invert the current status
+			setDesignStored(sCurrDesign, !sCurrDesign.stored);	// Invert the current status
 			saveTemplate();
 			storeTemplates();
 			updateStoreButton(sCurrDesign.stored);
 			break;
+		case IDDES_UPGRADEBUTTON:
+			{
+				DROID_TEMPLATE *psBasis = templateFromButtonId(droidTemplID);  // Does not return the first template, which is the empty template.
+				DROID_TEMPLATE *psUpgraded = (psBasis != nullptr && !psBasis->prefab) ? createUpgradedDesign(*psBasis) : nullptr;
+				if (psUpgraded == nullptr)
+				{
+					break;
+				}
+				// The upgrade replaces the design it was made from, so that one leaves the list. Select the upgrade, ready to be changed.
+				desSetupDesignTemplates();
+				widgDelete(psWScreen, IDDES_TEMPLBASE);
+				intAddTemplateForm(psUpgraded);
+				for (size_t i = 0; i < apsTemplateList.size(); ++i)
+				{
+					if (apsTemplateList[i] == psUpgraded)
+					{
+						intProcessDesign(IDDES_TEMPLSTART + static_cast<UDWORD>(i));
+						break;
+					}
+				}
+				break;
+			}
 		case IDDES_SYSTEMBUTTON:
 			// Add the correct component form
 			switch (droidTemplateType(&sCurrDesign))
@@ -3777,17 +3827,10 @@ static bool saveTemplate()
 {
 	if (!intValidTemplate(&sCurrDesign, aCurrName, false, selectedPlayer))
 	{
-		if (bMultiPlayer)
-		{
-			widgHide(psWScreen, IDDES_STOREBUTTON);
-		}
+		updateVaultButtons(false);
 		return false;
 	}
-	if (bMultiPlayer)
-	{
-		widgReveal(psWScreen, IDDES_STOREBUTTON);
-		updateStoreButton(sCurrDesign.stored);	// Change the buttons icon
-	}
+	updateVaultButtons(true);
 
 	/* if first (New Design) button selected find empty template
 	 * else find current button template
@@ -3823,6 +3866,11 @@ static bool saveTemplate()
 	}
 
 	/* Copy the template */
+	if (!sCurrDesign.storedId.isEmpty() && psTempl->storedId == sCurrDesign.storedId)
+	{
+		// Which design this one replaces may have been changed (by deleting a design) since sCurrDesign was copied from the list.
+		sCurrDesign.supersedes = psTempl->supersedes;
+	}
 	*psTempl = sCurrDesign;
 
 	/* Now update the droid template form */
@@ -3831,6 +3879,11 @@ static bool saveTemplate()
 
 	// Add template to in-game template list, since localTemplates/apsTemplateList is for UI use only.
 	copyTemplate(selectedPlayer, psTempl);
+
+	if (psTempl->stored)
+	{
+		storeTemplates(); // keep the stored copy up to date, a game does not always end in a clean shutdown
+	}
 
 	return true;
 }
@@ -3969,4 +4022,25 @@ void updateStoreButton(bool isStored)
 	}
 
 	widgSetUserData2(psWScreen, IDDES_STOREBUTTON, imageset);
+}
+
+static void updateVaultButtons(bool designIsValid)
+{
+	if (!designIsValid)
+	{
+		widgHide(psWScreen, IDDES_STOREBUTTON);
+		widgHide(psWScreen, IDDES_UPGRADEBUTTON);
+		return;
+	}
+	widgReveal(psWScreen, IDDES_STOREBUTTON);
+	updateStoreButton(sCurrDesign.stored);	// Change the buttons icon
+	// A design that came with the game is not stored in the file, so there is nothing for an upgrade to replace.
+	if (sCurrDesign.prefab)
+	{
+		widgHide(psWScreen, IDDES_UPGRADEBUTTON);
+	}
+	else
+	{
+		widgReveal(psWScreen, IDDES_UPGRADEBUTTON);
+	}
 }
