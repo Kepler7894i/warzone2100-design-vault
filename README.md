@@ -1,3 +1,8 @@
+> **This is a fork: Warzone 2100 4.4.2 with "Design Vault"** – stored designs that stay across games, and upgrade lines where a
+> newer design replaces an older one. What changed, how to build it on Windows, Linux and macOS, and how to send it upstream:
+> **[design-vault/README.md](design-vault/README.md)**. Everything below is the original project's README.
+> Branches: `design-vault` (this one), `design-vault-mod` (a data-mod variant for the unmodified Steam game).
+
 Warzone 2100
 ============
 

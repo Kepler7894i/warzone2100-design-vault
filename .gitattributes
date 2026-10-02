@@ -4,3 +4,6 @@
 
 # Exclude external stuff from Github's language statistics.
 3rdparty/* linguist-vendored
+
+# shell scripts must keep LF line endings, also in a checkout on Windows (they run under Linux/macOS)
+*.sh text eol=lf

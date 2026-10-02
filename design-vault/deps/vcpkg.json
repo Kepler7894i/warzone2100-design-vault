@@ -1,0 +1,32 @@
+{
+	"name": "warzone2100-deps",
+	"version-string": "4.4.2-local",
+	"builtin-baseline": "1d483bc44f8c35627407d7024e0045743829c2e8",
+	"dependencies": [
+		"sdl2",
+		"physfs",
+		"harfbuzz",
+		"fribidi",
+		"libogg",
+		"libtheora",
+		"libvorbis",
+		"opus",
+		"libpng",
+		"freetype",
+		"gettext-libintl",
+		"openal-soft",
+		"zlib",
+		"sqlite3",
+		"libsodium",
+		{
+			"name": "curl",
+			"default-features": false,
+			"features": [ "ssl" ]
+		},
+		"angle",
+		{
+			"name": "basisu",
+			"host": true
+		}
+	]
+}
