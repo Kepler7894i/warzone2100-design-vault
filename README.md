@@ -1,3 +1,8 @@
+> **This is a fork: Warzone 2100 4.7.0 with a "Design Vault" mod (branch `design-vault-mod`).** The game's code is unchanged; `mod/`
+> adds a mod that keeps your stored designs across games and lets a newer design replace an older one. See
+> **[design-vault/README.md](design-vault/README.md)**. The version with full features, a modified game, is on the
+> `design-vault` branch. Everything below is the original project's README.
+
 <h1 align="center">
   <img src="icons/warzone2100.large.png" alt="Warzone 2100">
   <br />

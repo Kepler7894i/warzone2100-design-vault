@@ -1,0 +1,10 @@
+# Design lines: which saved design replaces which older one.
+#
+# One line per pair:   NEWER replaces OLDER
+# Use the names the designs have in the game (they are shown in this mod's library, <config>\userdata\designvault\designs.json),
+# or their ids (DV_0001). A line can be as long as you like: put "C replaces B" and "B replaces A" on two lines.
+# In a game where C can be built, B and A are not offered any more. In a game where it can not (its body or weapon is not
+# researched yet), the older one is offered as usual.
+#
+# Example:
+#   Lancer Cobra Hover replaces Machinegun Viper Wheels
