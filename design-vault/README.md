@@ -1,4 +1,9 @@
-# Warzone 2100 – Design Vault (mod branch)
+# Warzone 2100 â€“ Design Vault (mod branch)
+
+> **This is the 4.4.2 branch (`design-vault-mod-4.4.2`)** - the mod on Warzone 2100 4.4.2, the version of the Steam release,
+> which is what it was tested with on the Steam copy. The same mod on 4.7.0 is the default mod branch
+> [`design-vault-mod`](https://github.com/Kepler7894i/warzone2100-design-vault/tree/design-vault-mod).
+
 
 This branch is Warzone 2100 **4.4.2 with no change to the game's code**, plus a **mod** (`mod/`) for the unmodified Steam game that
 keeps the vehicle designs you like across games and lets a newer design take over from an older one. Nothing has to be compiled.
