@@ -49,6 +49,7 @@
 #include "lib/sound/audio.h"
 
 #include "intdisplay.h"
+#include "designvault_icons.h"
 
 #include "objects.h"
 #include "loop.h"
@@ -644,6 +645,14 @@ void IntStatsButton::display(int xOffset, int yOffset)
 	}
 
 	displayIMD(image, object, xOffset, yOffset);
+	// A stored design, one that is kept for every game, carries a small disk.
+	if (const DROID_TEMPLATE *psTemplate = castDroidTemplate(Stat))
+	{
+		if (psTemplate->stored)
+		{
+			designVaultDrawStoredMarker(xOffset + x() + 2, yOffset + y() + 2);
+		}
+	}
 	displayIfHighlight(xOffset, yOffset);
 }
 

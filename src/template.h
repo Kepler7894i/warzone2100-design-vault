@@ -24,6 +24,8 @@
 #include "droiddef.h"
 #include <memory>
 #include <functional>
+#include <string>
+#include <unordered_set>
 
 extern bool allowDesign;
 extern bool includeRedundantDesigns;
@@ -65,6 +67,24 @@ DROID_TEMPLATE *getTemplateFromMultiPlayerID(UDWORD multiPlayerID);
 bool researchedTemplate(const DROID_TEMPLATE *psCurr, int player, bool allowRedundant = false, bool verbose = false);
 
 void listTemplates();
+
+// Stored designs. A stored design is kept in userdata/<ruleset>/templates.json and comes back in every game as soon as its components are researched.
+// A stored design can replace an older stored design (see designchain.h), which then is not offered anymore while the newer one can be used.
+
+/// A new identity for a stored design.
+WzString newStoredDesignId();
+/// Stores or unstores the given design. Gives it an identity, or takes it out of the line of designs it belongs to.
+/// This changes `design` itself and any other design that was linked to it. It does not write anything to disk, call storeTemplates() for that.
+void setDesignStored(DROID_TEMPLATE &design, bool stored);
+/// Removes a design from the stored designs and writes the file. For a design that is about to be deleted. `localEntry` is an element of localTemplates.
+void forgetStoredDesign(DROID_TEMPLATE &localEntry);
+/// Makes a stored copy of `basis` (an element of localTemplates) that replaces it, and returns the copy (a new element of localTemplates).
+DROID_TEMPLATE *createUpgradedDesign(DROID_TEMPLATE &basis);
+/// The identities of the stored designs that are replaced by a stored design for which `isUsable` is true.
+std::unordered_set<std::string> findSupersededDesigns(const std::function<bool (const DROID_TEMPLATE &)> &isUsable);
+bool isDesignSuperseded(const DROID_TEMPLATE &design, const std::unordered_set<std::string> &superseded);
+/// Developer self-test of the stored designs, see designvault_selftest.cpp. Does nothing unless WZ_DESIGNVAULT_SELFTEST is set.
+void designVaultSelfTestTick();
 
 nlohmann::json saveTemplateCommon(const DROID_TEMPLATE *psCurr);
 bool loadTemplateCommon(WzConfig &ini, DROID_TEMPLATE &outputTemplate);

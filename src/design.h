@@ -47,6 +47,7 @@
 #define IDDES_WEAPONS_B		5029		// The weapon TURRET_B button for the Component form (right)
 
 #define IDDES_STOREBUTTON	5905		// Stored template button
+#define IDDES_UPGRADEBUTTON	5906		// Button that makes a stored copy of a design which replaces it
 
 /* Design screen bar graph IDs */
 #define IDDES_BODYARMOUR_K	5100		// The body armour bar graph for kinetic weapons
@@ -115,6 +116,9 @@ bool intAddDesign(bool bShowCentreScreen);
 void intRemoveDesign();
 void intProcessDesign(UDWORD id);
 void intRunDesign();
+
+/// Fills apsTemplateList with the designs that the design screen offers.
+void desSetupDesignTemplates();
 
 const char *GetDefaultTemplateName(DROID_TEMPLATE *psTemplate);
 

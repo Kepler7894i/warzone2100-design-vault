@@ -1735,8 +1735,8 @@ bool stageThreeInitialise()
 	if (bMultiPlayer)
 	{
 		multiGameInit();
-		initTemplates();
 	}
+	initTemplates();	// stored designs, in every kind of game
 
 	preProcessVisibility();
 

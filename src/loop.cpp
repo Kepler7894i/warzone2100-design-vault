@@ -59,6 +59,7 @@
 #include "warzoneconfig.h"
 
 #include "multiplay.h" //ajl
+#include "template.h"
 #include "levels.h"
 #include "visibility.h"
 #include "multimenu.h"
@@ -656,6 +657,8 @@ GAMECODE gameLoop()
 
 	static size_t numForcedUpdatesLastCall = 0;
 	static bool previousUpdateWasRender = false;
+
+	designVaultSelfTestTick(); // does nothing, unless it was asked to run (see designvault_selftest.cpp)
 
 	size_t numRegularUpdatesTicks = 0;
 	size_t numFastForwardTicks = 0;
